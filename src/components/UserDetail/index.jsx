@@ -1,18 +1,46 @@
-import React from "react";
-import { Button, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Button, Typography, CircularProgress } from "@mui/material";
 
 import "./styles.css";
 import { Link, useParams } from "react-router-dom";
-import models from "../../modelData/models";
+import apiService from "../../lib/apiService";
 
 /**
  * Define UserDetail, a React component of Project 4.
  */
 function UserDetail() {
     const { userId } = useParams();
-    const user = models.userModel(userId);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    if (!user) {
+    useEffect(() => {
+      const loadUser = async () => {
+        try {
+          setLoading(true);
+          const data = await apiService.fetchUserById(userId);
+          if (!data) {
+            setError("User not found");
+          } else {
+            setUser(data);
+            setError(null);
+          }
+        } catch (err) {
+          setError("Failed to load user");
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      loadUser();
+    }, [userId]);
+
+    if (loading) {
+      return <CircularProgress />;
+    }
+
+    if (error || !user) {
       return <Typography>User not found.</Typography>;
     }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,21 +8,54 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 
 import "./styles.css";
-import models from "../../modelData/models";
+import apiService from "../../lib/apiService";
 
 /**
  * Define UserPhotos, a React component of Project 4.
  */
 function UserPhotos () {
     const { userId } = useParams();
-    const user = models.userModel(userId);
-    const photos = models.photoOfUserModel(userId);
+    const [user, setUser] = useState(null);
+    const [photos, setPhotos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    if (!user) {
+    useEffect(() => {
+      const loadData = async () => {
+        try {
+          setLoading(true);
+          const userData = await apiService.fetchUserById(userId);
+          if (!userData) {
+            setError("User not found");
+            setLoading(false);
+            return;
+          }
+          setUser(userData);
+
+          const photosData = await apiService.fetchPhotosByUserId(userId);
+          setPhotos(photosData);
+          setError(null);
+        } catch (err) {
+          setError("Failed to load data");
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      loadData();
+    }, [userId]);
+
+    if (loading) {
+      return <CircularProgress />;
+    }
+
+    if (error || !user) {
       return <Typography>User not found.</Typography>;
     }
 
