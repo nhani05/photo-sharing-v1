@@ -58,12 +58,7 @@ function TopBar() {
   );
 }
 
-export default TopBar;
-          {getContextText()}
-        </Typography>
-      </Toolbar>
-    </AppBar>
-  );
-}
+// export default TopBar;
+
 
 export default TopBar;
