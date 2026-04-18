@@ -2,7 +2,7 @@
  * API Service - Handle all HTTP requests to the backend
  */
 
-const API_BASE_URL = "http://localhost:8081/api";
+const API_BASE_URL = "https://rfjxr8-8081.csb.app/api";
 
 /**
  * Fetch all users from the backend
@@ -46,7 +46,9 @@ export const fetchUserById = async (userId) => {
  */
 export const fetchPhotosByUserId = async (userId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/photo/photosOfUser/${userId}`);
+    const response = await fetch(
+      `${API_BASE_URL}/photo/photosOfUser/${userId}`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch photos: ${response.statusText}`);
     }
